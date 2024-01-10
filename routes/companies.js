@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const companyFilterSchema = require("../schema/companyFilter.json");
 
 const router = new express.Router();
 
@@ -52,10 +53,33 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
 
-  // TODO: validation (JSONschema)
+  // If query is empty, there's nothing to filter
+  if (req.query === undefined) {
+    const companies = await Company.findAll();
+    return res.json({ companies });
+  }
 
-  // conditional on whether or not there's content
-  const companies = await Company.findAll();
+  // Otherwise, validate query string and find companies based on filter
+  const validator = jsonschema.validate(
+    req?.query,
+    companyFilterSchema,
+    {required: true}
+  );
+
+  if (!validator.valid) {
+    const errs = validator.errors.map(e => e.stack);
+    throw new BadRequestError(errs);
+  }
+
+  // TODO: put this validation into JSONschema
+  // for now, this ensures max employees is greater than min employees
+  if (req.query?.minEmployees && req.query?.maxEmployees) {
+    if (req.query.minEmployees > req.query.maxEmployees) {
+      throw new BadRequestError("minEmployees must be less than maxEmployees");
+    }
+  }
+
+  const companies = await Company.findAllFiltered();
   return res.json({ companies });
 });
 
