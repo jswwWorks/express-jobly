@@ -96,14 +96,26 @@ describe("GET /companies", function () {
     });
   });
 
-  test("ok finding all companies without any filters provided")
-  // add mock
+  test("ok finding all companies without any filters provided",
+  async function () {
+    // add mock
+    // Have to import Company and set Company.findAll to a jest.fn()
+    const Company = require('../models/company');
+    Company.findAll = jest.fn();
+    Company.findAll.mockReturnValue(["No Filter"]);
+    const resp = await request(app).get('/companies');
+    expect(resp.body).toEqual({companies: ["No Filter"]});
+  });
 
-  test("ok finding all filtered companies when a filter is provided")
-  // add mock
+  // test("ok finding all filtered companies when a filter is provided",
+  //  async function() {
+  //     // add mock
+  //     // Have to import company and set Company.findAllFiltered to a jext.fn()
+  //     const resp = await request(app).get('/companies?')
 
+  //     // TODO: after mock tests work, write integration test in the future
 
-  // TODO: after mock tests work, write integration test in the future
+  // });
 
 });
 

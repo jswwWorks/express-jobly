@@ -67,6 +67,8 @@ class Company {
     return companiesRes.rows;
   }
 
+  //TODO: New static method findAllFiltered
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
