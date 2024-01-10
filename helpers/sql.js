@@ -2,9 +2,6 @@
 
 const { BadRequestError } = require("../expressError");
 
-// THIS NEEDS SOME GREAT DOCUMENTATION.
-
-
 /**
  *  --INPUT--
  *
@@ -37,6 +34,8 @@ const { BadRequestError } = require("../expressError");
  *  Column names in dataToUpdate are in camelCase, so it converts each name to
  *  its snake_case version.
  *
+ *  Throws an error if dataToUpdate is empty.
+ *
  *  --OUTPUT--
  *
  *  Returns an object with keys 'setCols' and 'values'.
@@ -48,6 +47,8 @@ const { BadRequestError } = require("../expressError");
  *
  *  Example: { setCols: "first_name=$1, age=$2", values: ['Aliya', 32] }
  */
+// TODO: What if the user doesn't provide good jsToSql data? No validation
+// for this
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   // Ensures there are at least some changes to make in the database
