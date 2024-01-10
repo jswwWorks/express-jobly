@@ -3,7 +3,7 @@
 const { sqlForPartialUpdate } = require('./sql');
 
 describe('sqlForPartialUpdate', function () {
-  //Test for successful update
+
   test('works: non-empty data', function () {
     const dataToUpdate = {
       "firstName": 'Aliya',
@@ -20,7 +20,7 @@ describe('sqlForPartialUpdate', function () {
       values: ['Aliya', 32]
     });
   });
-  //Test for empty data
+
   test("throws error: empty data", function () {
     const dataToUpdate = {};
     const jsToSql = {
@@ -28,13 +28,27 @@ describe('sqlForPartialUpdate', function () {
       lastName: "last_name",
       isAdmin: "is_admin",
     };
-    //Option 1
-    const result = sqlForPartialUpdate(dataToUpdate, jsToSql);
-    expect(result).toThrow(new Error('No data'));
-    //Option 2
-    // expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(new Error('No data'));
-    //Option 3
-    // function throwError() { sqlForPartialUpdate(dataToUpdate, jsToSql)};
-    // expect(throwError).toThrow(new Error('No data'));
+
+    function throwError() { sqlForPartialUpdate(dataToUpdate, jsToSql)};
+    expect(throwError).toThrow(new Error('No data'));
   });
 });
+
+
+
+// Note to self on toThrow in "throws error: empty data" test
+
+// Idea #1
+// const result = sqlForPartialUpdate(dataToUpdate, jsToSql);
+// expect(result).toThrow(new Error('No data'));
+// Didn't work: we called the function and stored it into results
+// before expecting the error
+
+// Idea #2
+// expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(new Error('No data'));
+// Didn't work: still calls the function prior to the toThrow statement
+
+// // Idea# 3
+// function throwError() { sqlForPartialUpdate(dataToUpdate, jsToSql)};
+// expect(throwError).toThrow(new Error('No data'));
+// Does work: it recognizes it's expecting an error before it throws
