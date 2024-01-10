@@ -5,6 +5,8 @@ const request = require("supertest");
 const db = require("../db");
 const app = require("../app");
 
+const Company = require('../models/company');
+
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -98,25 +100,30 @@ describe("GET /companies", function () {
 
   test("ok finding all companies without any filters provided",
   async function () {
-    // add mock
-    // Have to import Company and set Company.findAll to a jest.fn()
-    const Company = require('../models/company');
+
+    // Set Company.findAll to a jest.fn()
     Company.findAll = jest.fn();
+
     Company.findAll.mockReturnValue(["No Filter"]);
+
     const resp = await request(app).get('/companies');
     expect(resp.body).toEqual({companies: ["No Filter"]});
+
   });
 
-  // test("ok finding all filtered companies when a filter is provided",
-  //  async function() {
-  //     // add mock
-  //     // Have to import company and set Company.findAllFiltered to a jext.fn()
-  //     const resp = await request(app).get('/companies?')
+  test("ok finding all filtered companies when a filter is provided",
+   async function() {
+      // Set Company.findAllFiltered to a jext.fn()
+      Company.findAllFiltered = jest.fn(); // error here
 
-  //     // TODO: after mock tests work, write integration test in the future
+      Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
 
-  // });
+      const resp = await request(app).get('/companies?');
+      expect(resp.body).toEqual({companies: ["Filtered Company"]});
 
+    });
+
+    // TODO: after mock tests work, write integration test in the future
 });
 
 /************************************** GET /companies/:handle */
