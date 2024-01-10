@@ -95,6 +95,16 @@ describe("GET /companies", function () {
           ],
     });
   });
+
+  test("ok finding all companies without any filters provided")
+  // add mock
+
+  test("ok finding all filtered companies when a filter is provided")
+  // add mock
+
+
+  // TODO: after mock tests work, write integration test in the future
+
 });
 
 /************************************** GET /companies/:handle */
