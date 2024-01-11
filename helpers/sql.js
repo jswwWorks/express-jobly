@@ -71,4 +71,33 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+/**
+ * --INPUT--
+ *
+ *  Takes 2 objects: dataToFilter and jsToSql.
+ *
+ *  dataToFilter contains a variable amount of keys about the information
+ *  to filter the database based on a GET request with a query string.
+ *
+ *  Example of dataToFilter contents: {nameLike : 'net', minEmployees: 4}
+ *
+ *  jsToSql contains a variable amount of keys. For the possible columns in
+ *  the database to update, the key is the camelCase version of the column name
+ *  and the value is the snake_case version of the column name.
+ *
+ *  Single-worded variables are excluded because no conversion is needed.
+ *
+ *  Example of jsToSql contents:
+ *
+ *   {
+      firstName: "first_name",
+      lastName: "last_name",
+      isAdmin: "is_admin",
+    }
+*/
+
+function sqlForFilter(dataToFilter, jsToSql) {
+
+}
+
+module.exports = { sqlForPartialUpdate, sqlForFilter };

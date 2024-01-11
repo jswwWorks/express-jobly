@@ -140,7 +140,7 @@ describe("GET /companies", function () {
     });
   });
 
-    // TODO: after mock tests work, write integration test in the future
+    // TODO: after mock tests work, write integration test for the filter
 });
 
 /************************************** GET /companies/:handle */

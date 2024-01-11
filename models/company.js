@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForFilter } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -73,7 +73,24 @@ class Company {
    *  Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
   static async findAllFiltered() {
-    //TODO: write soon! (also add similar method in sql.js to what you had before)
+    const { setCols, values } = sqlForFilter(
+      data,
+      {
+        nameLike: "name",
+        numEmployees: "num_employees",
+      });
+    const handleVarIdx = "$" + (values.length + 1);
+
+    const querySql = `
+        SELECT handle, name, description, numEmployees, logo_url
+          FROM companies
+          WHERE name ILike %$1% AND num_employees >= $2 AND numEmployees <= $3`;
+    const result = await db.query(querySql, [...values, handle]);
+    const company = result.rows[0];
+
+    if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    return company;
   }
   //TODO: handle an empty query (a ? with nothing)
 

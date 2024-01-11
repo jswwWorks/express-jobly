@@ -52,6 +52,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+  // TODO: Decompose function (checkQueryAndFormat) sending in req.query
 
   // If query has no keys, there's nothing to filter
   if (Object.keys(req.query).length === 0) {
@@ -59,26 +60,26 @@ router.get("/", async function (req, res, next) {
     return res.json({ companies });
   }
 
-  const filters = req.query;
+  const queryFilters = req.query;
 
-  if (filters?.minEmployees) {
-    filters.minEmployees = +filters.minEmployees;
+  if (queryFilters?.minEmployees) {
+    queryFilters.minEmployees = +queryFilters.minEmployees;
   }
 
-  if (filters?.maxEmployees) {
-    filters.maxEmployees = +filters.maxEmployees;
+  if (queryFilters?.maxEmployees) {
+    queryFilters.maxEmployees = +queryFilters.maxEmployees;
   }
 
   // Ensures max employees is greater than min employees
-  if (filters.minEmployees && filters.maxEmployees) {
-    if (filters.minEmployees > filters.maxEmployees) {
+  if (queryFilters.minEmployees && queryFilters.maxEmployees) {
+    if (queryFilters.minEmployees > queryFilters.maxEmployees) {
       throw new BadRequestError("minEmployees must be less than maxEmployees");
     }
   }
 
   // Otherwise, validate query string and find companies based on filter
   const validator = jsonschema.validate(
-    filters,
+    queryFilters,
     companyFilterSchema,
     {required: true}
   );
@@ -88,7 +89,7 @@ router.get("/", async function (req, res, next) {
     throw new BadRequestError(errs);
   }
 
-  const companies = await Company.findAllFiltered();
+  const companies = await Company.findAllFiltered(queryFilters);
   return res.json({ companies });
 });
 
