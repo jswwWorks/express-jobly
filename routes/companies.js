@@ -8,7 +8,7 @@ const express = require("express");
 const { BadRequestError } = require("../expressError");
 const { ensureLoggedIn } = require("../middleware/auth");
 const Company = require("../models/company");
-const { checkQueryAndFormat } = require('../helpers/queryValidation');
+const { _checkQueryAndFormat } = require('../helpers/queryValidation');
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
@@ -61,7 +61,7 @@ router.get("/", async function (req, res, next) {
     return res.json({ companies });
   }
 
-  const queryFilters = checkQueryAndFormat(req.query);
+  const queryFilters = _checkQueryAndFormat(req.query);
 
   // if (queryFilters?.minEmployees) {
   //   queryFilters.minEmployees = +queryFilters.minEmployees;
