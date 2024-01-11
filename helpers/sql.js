@@ -131,7 +131,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  *  { setFilters: "name ILIKE $1 AND num_employees >= 2", values: ['net', 10] }
 */
 
-// TODO: add %% to part of the value for data sanitization
+
 function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
 
   // Iterates through dataToUpdate keys and creates an array for SQL input
@@ -144,7 +144,7 @@ function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
 
   let filters = [];
 
-  for (let i = 0; i < keys.length; i++) { //TODO: refactor to make it shorter
+  for (let i = 0; i < keys.length; i++) {
 
     const filterName = keys[i];
 

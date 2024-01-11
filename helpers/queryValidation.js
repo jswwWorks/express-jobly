@@ -1,5 +1,7 @@
 "use strict";
 
+const { BadRequestError } = require('../expressError');
+
 /** checkQueryAndFormat is a helper function for the routes/companies/ GET
  *  route.
  *
@@ -42,14 +44,20 @@
  */
 //TODO: refactor post-test writing
 function _checkQueryAndFormat(query) {
-  const queryFilters = req.query;
+  const queryFilters = query;
 
   if (queryFilters?.minEmployees) {
     queryFilters.minEmployees = +queryFilters.minEmployees;
+    if (isNaN(queryFilters.minEmployees)) {
+      throw new BadRequestError("minEmployees must be a number!");
+    }
   }
 
   if (queryFilters?.maxEmployees) {
     queryFilters.maxEmployees = +queryFilters.maxEmployees;
+    if (isNaN(queryFilters.maxEmployees)) {
+      throw new BadRequestError("maxEmployees must be a number!");
+    }
   }
 
   // Ensures max employees is greater than min employees
@@ -62,4 +70,4 @@ function _checkQueryAndFormat(query) {
   return queryFilters;
 }
 
-module.exports = { _checkQueryAndFormat }
+module.exports = { _checkQueryAndFormat };

@@ -88,7 +88,7 @@ describe("findAll", function () {
 });
 
 /************************************** findAllFiltered */
-//TODO: Tests for querying data base
+
 describe("findAllFiltered", function () {
   test("works: all filters and finds companies", async function () {
     const queryFilters = {

@@ -30,7 +30,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyNewSchema,
-    {required: true}
+    { required: true }
   );
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
@@ -53,7 +53,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  // TODO: Decompose function (checkQueryAndFormat) sending in req.query
 
   // If query has no keys, there's nothing to filter
   if (Object.keys(req.query).length === 0) {
@@ -63,26 +62,11 @@ router.get("/", async function (req, res, next) {
 
   const queryFilters = _checkQueryAndFormat(req.query);
 
-  // if (queryFilters?.minEmployees) {
-  //   queryFilters.minEmployees = +queryFilters.minEmployees;
-  // }
-
-  // if (queryFilters?.maxEmployees) {
-  //   queryFilters.maxEmployees = +queryFilters.maxEmployees;
-  // }
-
-  // // Ensures max employees is greater than min employees
-  // if (queryFilters.minEmployees && queryFilters.maxEmployees) {
-  //   if (queryFilters.minEmployees > queryFilters.maxEmployees) {
-  //     throw new BadRequestError("minEmployees must be less than maxEmployees");
-  //   }
-  // }
-
   // Otherwise, validate query string and find companies based on filter
   const validator = jsonschema.validate(
     queryFilters,
     companyFilterSchema,
-    {required: true}
+    { required: true }
   );
 
   if (!validator.valid) {
@@ -122,7 +106,7 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyUpdateSchema,
-    {required:true}
+    { required: true }
   );
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
