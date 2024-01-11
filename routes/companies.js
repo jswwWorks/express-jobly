@@ -53,15 +53,32 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
 
-  // If query is empty, there's nothing to filter
-  if (req.query === undefined) {
+  // If query has no keys, there's nothing to filter
+  if (Object.keys(req.query).length === 0) {
     const companies = await Company.findAll();
     return res.json({ companies });
   }
 
+  const filters = req.query;
+
+  if (filters?.minEmployees) {
+    filters.minEmployees = +filters.minEmployees;
+  }
+
+  if (filters?.maxEmployees) {
+    filters.maxEmployees = +filters.maxEmployees;
+  }
+
+  // Ensures max employees is greater than min employees
+  if (filters.minEmployees && filters.maxEmployees) {
+    if (filters.minEmployees > filters.maxEmployees) {
+      throw new BadRequestError("minEmployees must be less than maxEmployees");
+    }
+  }
+
   // Otherwise, validate query string and find companies based on filter
   const validator = jsonschema.validate(
-    req?.query,
+    filters,
     companyFilterSchema,
     {required: true}
   );
@@ -69,14 +86,6 @@ router.get("/", async function (req, res, next) {
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
-  }
-
-  // TODO: put this validation into JSONschema
-  // for now, this ensures max employees is greater than min employees
-  if (req.query?.minEmployees && req.query?.maxEmployees) {
-    if (req.query.minEmployees > req.query.maxEmployees) {
-      throw new BadRequestError("minEmployees must be less than maxEmployees");
-    }
   }
 
   const companies = await Company.findAllFiltered();
