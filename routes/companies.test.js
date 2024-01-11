@@ -118,7 +118,7 @@ describe("GET /companies", function () {
 
       Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
 
-      const resp = await request(app).get('/companies?');
+      const resp = await request(app).get('/companies?maxEmployees=1');
       expect(resp.body).toEqual({companies: ["Filtered Company"]});
 
     });
@@ -130,7 +130,7 @@ describe("GET /companies", function () {
 
   test("query string has minEmployees > maxEmployees", async function () {
     const resp = await request(app).get(
-      '/companies?minEmployees=2+maxEmployees=1'
+      '/companies?minEmployees=2&maxEmployees=1'
     );
     expect(resp.body).toEqual({
       "error": {
