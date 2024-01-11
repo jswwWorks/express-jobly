@@ -67,18 +67,26 @@ class Company {
     return companiesRes.rows;
   }
 
-  //TODO: New static method findAllFiltered
-  /** Finds all companies that match certain filtered criteria.
+  /** Finds all companies that match certain filtered criteria given as an
+   *  object.
+   *  Example Input: { nameLike, minEmployees, maxEmployees }
    *
    *  Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
-  static async findAllFiltered() {
-    const { setCols, values } = sqlWhereFilter(
-      data,
+  static async findAllFiltered(queryFilters) {
+    const { setFilters, values } = sqlWhereFilter(
+      queryFilters,
       {
         nameLike: "name",
-        numEmployees: "num_employees",
-      });
+        minEmployees: "num_employees",
+        maxEmployees: "num_employees",
+      },
+      {
+        nameLike: "ILIKE",
+        minEmployees: ">=",
+        maxEmployees: "<="
+      }
+    );
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `

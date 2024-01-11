@@ -56,7 +56,7 @@ describe('sqlWhereFilter', function () {
     const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
-      setFilters: `name ILIKE %$1% AND num_employees <= $2 AND num_employees >= $3`,
+      setFilters: `name ILIKE '%' || $1 || '%' AND num_employees <= $2 AND num_employees >= $3`,
       values: ['net', 45, 2]
     });
   });
@@ -80,7 +80,7 @@ describe('sqlWhereFilter', function () {
     const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
-      setFilters: `num_employees <= $1 AND name ILIKE %$2%`,
+      setFilters: `num_employees <= $1 AND name ILIKE '%' || $2 || '%'`,
       values: [45, 'net']
     });
   });

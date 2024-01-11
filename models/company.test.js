@@ -87,10 +87,102 @@ describe("findAll", function () {
   });
 });
 
-/************************************** findAll */
+/************************************** findAllFiltered */
 //TODO: Tests for querying data base
-//TODO: MAKE SURE TO THROW ERROR FOR EMPTY QUERY
+describe("findAllFiltered", function () {
+  test("works: all filters and finds companies", async function () {
+    const queryFilters = {
+      "nameLike": "C",
+      "minEmployees": 2,
+      "maxEmployees": 3
+    }
 
+    const companies = await Company.findAllFilter(queryFilters);
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+
+  test("works: all filters and finds no companies", async function () {
+    const queryFilters = {
+      "nameLike": "D",
+      "minEmployees": 2,
+      "maxEmployees": 3
+    }
+
+    const companies = await Company.findAllFilter(queryFilters);
+    expect(companies).toEqual([]);
+  });
+
+  test("works: some filters and finds companies", async function () {
+    const queryFilters = {
+      "nameLike": "C",
+      "maxEmployees": 2
+    }
+
+    const companies = await Company.findAllFilter(queryFilters);
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+    ]);
+  });
+
+  test("works: one filter and finds companies", async function () {
+    const queryFilters = {
+      "nameLike": "C",
+    }
+
+    const companies = await Company.findAllFilter(queryFilters);
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+});
 
 
 /************************************** get */

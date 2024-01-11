@@ -153,8 +153,8 @@ function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
     const operator = jsToSqlOperator[filterName];
     const idx = i + 1;
 
-    if (filterName === "nameLike") {
-      filters.push(`${column} ${operator} %$${idx}%`);
+    if (operator === "ILIKE") {
+      filters.push(`${column} ${operator} '%' || $${idx} || '%'`);
     } else {
       filters.push(`${column} ${operator} $${idx}`);
     }
