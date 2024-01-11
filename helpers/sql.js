@@ -12,9 +12,9 @@ const { BadRequestError } = require("../expressError");
  *
  *  Example of dataToUpdate contents: {firstName : 'Aliya', age: 32}
  *
- *  jsToSql contains a variable amount of keys. For the possible columns in
- *  the database to update, the key is the camelCase version of the column name
- *  and the value is the snake_case version of the column name.
+ *  jsToSql contains a variable amount of keys. Contains keys with a camelCase
+ *  version of a column name and their value is the name in snake_case for
+ *  conversion as needed.
  *
  *  Single-worded variables are excluded because no conversion is needed.
  *
@@ -31,8 +31,8 @@ const { BadRequestError } = require("../expressError");
  *  Grabs information from dataToUpdate to determine which columns to UPDATE
  *  in SQL query, along with the new values of those columns.
  *
- *  Column names in dataToUpdate are in camelCase, so it converts each name to
- *  its snake_case version.
+ *  Column names in dataToUpdate are in camelCase, so it finds the name in
+ *  snake_case as needed.
  *
  *  Throws an error if dataToUpdate is empty.
  *
@@ -72,30 +72,51 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 }
 
 /**
+ *  // TODO: if this isn't used elsewhere, take out 'variable amount of keys'
+ *  in jsToSql description
+ *
  * --INPUT--
  *
  *  Takes 2 objects: dataToFilter and jsToSql.
- *
  *  dataToFilter contains a variable amount of keys about the information
- *  to filter the database based on a GET request with a query string.
+ *  to filter the database based on a GET request's query string.
  *
  *  Example of dataToFilter contents: {nameLike : 'net', minEmployees: 4}
  *
- *  jsToSql contains a variable amount of keys. For the possible columns in
- *  the database to update, the key is the camelCase version of the column name
- *  and the value is the snake_case version of the column name.
- *
- *  Single-worded variables are excluded because no conversion is needed.
+ *  jsToSql contains a variable amount of keys. Contains keys with a camelCase
+ *  version of a column name and their value is the name in snake_case for
+ *  conversion as needed.
  *
  *  Example of jsToSql contents:
  *
- *   {
-      firstName: "first_name",
-      lastName: "last_name",
-      isAdmin: "is_admin",
+ *  {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
     }
+
+ *  --FUNCTION--
+ *
+ *  Grabs information from dataToFilter to determines which columns to filter
+ *  in SQL query, along with how to filter those columns.
+ *
+ *  Column names in dataToFilter are in camelCase, so it finds the name in
+ *  snake_case as needed.
+ *
+ *  --OUTPUT--
+ *
+ *  Returns an object with keys 'filterCols' and 'values'.
+ *
+ *  'filterCols' is a string of all ways to filter the data,
+ *  along with a `=$X` for SQL injection prevention.
+ *
+ *  'values' is an array with each of the values to update in the database.
+ *
+ *  Example: { filterCols: "name ILIKE $1 AND num_employees >= $2",
+ *             values: ['net', 32] } //FIXME: quotes around columns? in example
 */
 
+// TODO: add %% to part of the value for data sanitization
 function sqlForFilter(dataToFilter, jsToSql) {
 
 }
