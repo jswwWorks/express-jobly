@@ -42,7 +42,7 @@ describe('sqlWhereFilter', function () {
       maxEmployees: 45,
       minEmployees: 2
     };
-    const jsToSql = {
+    const jsToSqlName = {
       nameLike: "name",
       minEmployees: "num_employees",
       maxEmployees: "num_employees",
@@ -56,10 +56,8 @@ describe('sqlWhereFilter', function () {
     const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
-      filterCols: `"name" ILIKE $1 AND
-                   "num_employees" <= $2 AND
-                   "num_employees" >= $3`,
-      values: ['%net%', 45, 2]
+      setFilters: `name ILIKE %$1% AND num_employees <= $2 AND num_employees >= $3`,
+      values: ['net', 45, 2]
     });
   });
 
@@ -82,9 +80,8 @@ describe('sqlWhereFilter', function () {
     const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
-      filterCols: `"num_employees" <= $1 AND
-                  "name" ILIKE $2`,
-      values: [45, '%net%']
+      setFilters: `num_employees <= $1 AND name ILIKE %$2%`,
+      values: [45, 'net']
     });
   });
 
@@ -106,7 +103,7 @@ describe('sqlWhereFilter', function () {
     const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
-      filterCols: `"num_employees" >= $3`,
+      setFilters: `num_employees >= $1`,
       values: [2]
     });
   });

@@ -77,15 +77,16 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  *
  * --INPUT--
  *
- *  Takes 3 objects: dataToFilter, jsToSqlName, jsToSqlCondition.
+ *  Takes 3 objects: dataToFilter, jsToSqlName, jsToSqlOperator.
+ *
  *  dataToFilter contains a variable amount of keys about the information
  *  to filter the database based on a GET request's query string.
  *
  *  Example of dataToFilter contents: {nameLike : 'net', minEmployees: 4}
  *
- *  jsToSqlName contains a variable amount of keys. Contains keys with a camelCase
- *  version of a column name and their value is the name in snake_case for
- *  conversion as needed.
+ *  jsToSqlName contains a variable amount of keys. Contains keys with a
+ *  camelCase version of a column name and their value is the name in
+ *  snake_case for conversion as needed.
  *
  *  Example of jsToSqlName contents:
  *
@@ -95,8 +96,11 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
       maxEmployees: "num_employees",
     }
  *
- *  jsToSqlOperator maps the js query name to the appropriate SQL operator
- *  to be used in the eventaul WHERE statement of the SQL query.
+ *  jsToSqlOperator maps the JS query name to the appropriate SQL operator
+ *  to be used in the eventual WHERE statement of the SQL query.
+ *
+ *  Unlike jsToSqlName, jsToSqlOperator contain an operator for every potential
+ *  filter.
  *
  * Example of jsToSqlOperator contents:
  *
@@ -123,12 +127,44 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  *
  *  'values' is an array with each of the values to update in the database.
  *
- *  Example: { filterCols: "name ILIKE $1 AND num_employees >= $2",
- *             values: ['net', 32] } //FIXME: quotes around columns? in example
+ *  Example:
+ *  { setFilters: "name ILIKE $1 AND num_employees >= 2", values: ['net', 10] }
 */
 
 // TODO: add %% to part of the value for data sanitization
-function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlCondition) {
+function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
+
+  // Iterates through dataToUpdate keys and creates an array for SQL input
+  // sanitization.
+
+  const keys = Object.keys(dataToFilter);
+
+  // {nameLike: 'net', minEmployees: 10} =>
+  // ['"name" ILIKE $1', '"num_employees" >= $2']
+
+  let filters = [];
+
+  for (let i = 0; i < keys.length; i++) { //TODO: refactor to make it shorter
+
+    const filterName = keys[i];
+
+    // Grab filter information to concatenate
+    const column = jsToSqlName[filterName] || filterName;
+    const operator = jsToSqlOperator[filterName];
+    const idx = i + 1;
+
+    if (filterName === "nameLike") {
+      filters.push(`${column} ${operator} %$${idx}%`);
+    } else {
+      filters.push(`${column} ${operator} $${idx}`);
+    }
+  }
+
+  // { setFilters: "name ILIKE $1 AND num_employees >= 2", values: ['net', 10] }
+  return {
+    setFilters: filters.join(" AND "),
+    values: Object.values(dataToFilter),
+  };
 
 }
 
