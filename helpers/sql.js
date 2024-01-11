@@ -160,7 +160,7 @@ function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
     }
   }
 
-  // { setFilters: "name ILIKE $1 AND num_employees >= 2", values: ['net', 10] }
+  // { setFilters: "name ILIKE $1 AND num_employees >= $2", values: ['net', 10]}
   return {
     setFilters: filters.join(" AND "),
     values: Object.values(dataToFilter),

@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, sqlForFilter } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlWhereFilter } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -87,20 +87,23 @@ class Company {
         maxEmployees: "<="
       }
     );
-    const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
-        SELECT handle, name, description, numEmployees, logo_url
+        SELECT handle,
+               name,
+               description,
+               num_employees AS "numEmployees",
+               logo_url AS "logoUrl"
           FROM companies
-          WHERE name ILike %$1% AND num_employees >= $2 AND numEmployees <= $3`;
-    const result = await db.query(querySql, [...values, handle]);
-    const company = result.rows[0];
+          WHERE ${setFilters};`
 
-    if (!company) throw new NotFoundError(`No company: ${handle}`);
+    // IMPORTANT ${setFilters} is pre-formatted for sanitization
 
-    return company;
+    const result = await db.query(querySql, [...values]);
+    const companies = result.rows;
+
+    return companies;
   }
-  //TODO: handle an empty query (a ? with nothing)
 
 
   /** Given a company handle, return data about company.

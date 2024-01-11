@@ -97,7 +97,7 @@ describe("findAllFiltered", function () {
       "maxEmployees": 3
     }
 
-    const companies = await Company.findAllFilter(queryFilters);
+    const companies = await Company.findAllFiltered(queryFilters);
     expect(companies).toEqual([
       {
         handle: "c2",
@@ -123,7 +123,7 @@ describe("findAllFiltered", function () {
       "maxEmployees": 3
     }
 
-    const companies = await Company.findAllFilter(queryFilters);
+    const companies = await Company.findAllFiltered(queryFilters);
     expect(companies).toEqual([]);
   });
 
@@ -133,7 +133,7 @@ describe("findAllFiltered", function () {
       "maxEmployees": 2
     }
 
-    const companies = await Company.findAllFilter(queryFilters);
+    const companies = await Company.findAllFiltered(queryFilters);
     expect(companies).toEqual([
       {
         handle: "c1",
@@ -157,7 +157,7 @@ describe("findAllFiltered", function () {
       "nameLike": "C",
     }
 
-    const companies = await Company.findAllFilter(queryFilters);
+    const companies = await Company.findAllFiltered(queryFilters);
     expect(companies).toEqual([
       {
         handle: "c1",
