@@ -8,6 +8,7 @@ const express = require("express");
 const { BadRequestError } = require("../expressError");
 const { ensureLoggedIn } = require("../middleware/auth");
 const Company = require("../models/company");
+const { checkQueryAndFormat } = require('../helpers/queryValidation');
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
@@ -60,22 +61,22 @@ router.get("/", async function (req, res, next) {
     return res.json({ companies });
   }
 
-  const queryFilters = req.query;
+  const queryFilters = checkQueryAndFormat(req.query);
 
-  if (queryFilters?.minEmployees) {
-    queryFilters.minEmployees = +queryFilters.minEmployees;
-  }
+  // if (queryFilters?.minEmployees) {
+  //   queryFilters.minEmployees = +queryFilters.minEmployees;
+  // }
 
-  if (queryFilters?.maxEmployees) {
-    queryFilters.maxEmployees = +queryFilters.maxEmployees;
-  }
+  // if (queryFilters?.maxEmployees) {
+  //   queryFilters.maxEmployees = +queryFilters.maxEmployees;
+  // }
 
-  // Ensures max employees is greater than min employees
-  if (queryFilters.minEmployees && queryFilters.maxEmployees) {
-    if (queryFilters.minEmployees > queryFilters.maxEmployees) {
-      throw new BadRequestError("minEmployees must be less than maxEmployees");
-    }
-  }
+  // // Ensures max employees is greater than min employees
+  // if (queryFilters.minEmployees && queryFilters.maxEmployees) {
+  //   if (queryFilters.minEmployees > queryFilters.maxEmployees) {
+  //     throw new BadRequestError("minEmployees must be less than maxEmployees");
+  //   }
+  // }
 
   // Otherwise, validate query string and find companies based on filter
   const validator = jsonschema.validate(
