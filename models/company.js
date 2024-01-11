@@ -68,6 +68,15 @@ class Company {
   }
 
   //TODO: New static method findAllFiltered
+  /** Finds all companies that match certain filtered criteria.
+   *
+   *  Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   */
+  static async findAllFiltered() {
+    //TODO: write soon! (also add similar method in sql.js to what you had before)
+  }
+  //TODO: handle an empty query (a ? with nothing)
+
 
   /** Given a company handle, return data about company.
    *
