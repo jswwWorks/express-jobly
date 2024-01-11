@@ -148,7 +148,8 @@ function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
 
     const filterName = keys[i];
 
-    // Grab filter information to concatenate
+    // This line isn't tested now becuase no uses currently, but have this for
+    // future use?
     const column = jsToSqlName[filterName] || filterName;
     const operator = jsToSqlOperator[filterName];
     const idx = i + 1;

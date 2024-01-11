@@ -97,6 +97,32 @@ describe("GET /companies", function () {
           ],
     });
   });
+     // TODO: We have a question about running this below all the other tests,
+     // ignores the Company.findAllFiltered and uses mock instead.
+  test("ok sending query and returning correct companies", async function () {
+    const resp = await request(app).get(
+      "/companies?minEmployees=1&maxEmployees=2&nameLike=C"
+    );
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            },
+          ],
+    });
+  });
 
   test("ok finding all companies without any filters provided",
   async function () {
@@ -139,8 +165,6 @@ describe("GET /companies", function () {
       }
     });
   });
-
-    // TODO: after mock tests work, write integration test for the filter
 });
 
 /************************************** GET /companies/:handle */

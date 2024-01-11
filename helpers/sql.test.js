@@ -107,4 +107,29 @@ describe('sqlWhereFilter', function () {
       values: [2]
     });
   });
+
+  test('works: good statement for one filter with no needed sql name change',
+   function() {
+    const dataToFilter = {
+      min: 2 // min is a dummy variable to test line 152 in sql.js
+    };
+    const jsToSqlName = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
+    };
+    const jsToSqlOperator =  {
+      nameLike: "ILIKE",
+      minEmployees: ">=",
+      maxEmployees: "<=",
+      min: ">=" // min is a dummy variable to test line 152 in sql.js
+    };
+
+    const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
+
+    expect(result).toEqual({
+      setFilters: `min >= $1`,
+      values: [2]
+    });
+  });
 });
