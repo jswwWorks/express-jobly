@@ -73,28 +73,39 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
 /**
  *  // TODO: if this isn't used elsewhere, take out 'variable amount of keys'
- *  in jsToSql description
+ *  in jsToSqlName description
  *
  * --INPUT--
  *
- *  Takes 2 objects: dataToFilter and jsToSql.
+ *  Takes 3 objects: dataToFilter, jsToSqlName, jsToSqlCondition.
  *  dataToFilter contains a variable amount of keys about the information
  *  to filter the database based on a GET request's query string.
  *
  *  Example of dataToFilter contents: {nameLike : 'net', minEmployees: 4}
  *
- *  jsToSql contains a variable amount of keys. Contains keys with a camelCase
+ *  jsToSqlName contains a variable amount of keys. Contains keys with a camelCase
  *  version of a column name and their value is the name in snake_case for
  *  conversion as needed.
  *
- *  Example of jsToSql contents:
+ *  Example of jsToSqlName contents:
  *
  *  {
       nameLike: "name",
       minEmployees: "num_employees",
       maxEmployees: "num_employees",
     }
-
+ *
+ *  jsToSqlOperator maps the js query name to the appropriate SQL operator
+ *  to be used in the eventaul WHERE statement of the SQL query.
+ *
+ * Example of jsToSqlOperator contents:
+ *
+ *  {
+      nameLike: "ILIKE",
+      minEmployees: ">=",
+      maxEmployees: "<=",
+    }
+ *
  *  --FUNCTION--
  *
  *  Grabs information from dataToFilter to determines which columns to filter
@@ -117,8 +128,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 */
 
 // TODO: add %% to part of the value for data sanitization
-function sqlForFilter(dataToFilter, jsToSql) {
+function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlCondition) {
 
 }
 
-module.exports = { sqlForPartialUpdate, sqlForFilter };
+module.exports = { sqlForPartialUpdate, sqlWhereFilter };

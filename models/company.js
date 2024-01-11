@@ -73,7 +73,7 @@ class Company {
    *  Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
   static async findAllFiltered() {
-    const { setCols, values } = sqlForFilter(
+    const { setCols, values } = sqlWhereFilter(
       data,
       {
         nameLike: "name",

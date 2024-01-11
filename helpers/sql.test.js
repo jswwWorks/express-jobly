@@ -1,6 +1,6 @@
 "use strict";
 
-const { sqlForPartialUpdate, sqlForFilter } = require('./sql');
+const { sqlForPartialUpdate, sqlWhereFilter } = require('./sql');
 
 describe('sqlForPartialUpdate', function () {
 
@@ -34,7 +34,7 @@ describe('sqlForPartialUpdate', function () {
   });
 });
 
-describe('sqlForFilter', function () {
+describe('sqlWhereFilter', function () {
 
   test('works: good statements for all possible filters', function() {
     const dataToFilter = {
@@ -47,8 +47,13 @@ describe('sqlForFilter', function () {
       minEmployees: "num_employees",
       maxEmployees: "num_employees",
     };
+    const jsToSqlOperator =  {
+      nameLike: "ILIKE",
+      minEmployees: ">=",
+      maxEmployees: "<=",
+    };
 
-    const result = sqlForFilter(dataToFilter, jsToSql);
+    const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
 
     expect(result).toEqual({
       filterCols: `"name" ILIKE $1 AND
@@ -56,27 +61,53 @@ describe('sqlForFilter', function () {
                    "num_employees" >= $3`,
       values: ['%net%', 45, 2]
     });
-
   });
-  // TODO: possible (if needed) add test for only some but not all filters
+
+  test('works: good statement for two filters', function() {
+    const dataToFilter = {
+      maxEmployees: 45,
+      nameLike: "net",
+    };
+    const jsToSqlName = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
+    };
+    const jsToSqlOperator =  {
+      nameLike: "ILIKE",
+      minEmployees: ">=",
+      maxEmployees: "<=",
+    };
+
+    const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
+
+    expect(result).toEqual({
+      filterCols: `"num_employees" <= $1 AND
+                  "name" ILIKE $2`,
+      values: [45, '%net%']
+    });
+  });
+
+  test('works: good statement for one filters', function() {
+    const dataToFilter = {
+      minEmployees: 2
+    };
+    const jsToSqlName = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
+    };
+    const jsToSqlOperator =  {
+      nameLike: "ILIKE",
+      minEmployees: ">=",
+      maxEmployees: "<=",
+    };
+
+    const result = sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator);
+
+    expect(result).toEqual({
+      filterCols: `"num_employees" >= $3`,
+      values: [2]
+    });
+  });
 });
-
-
-
-
-// Note to self on toThrow in "throws error: empty data" test
-
-// Idea #1
-// const result = sqlForPartialUpdate(dataToUpdate, jsToSql);
-// expect(result).toThrow(new Error('No data'));
-// Didn't work: we called the function and stored it into results
-// before expecting the error
-
-// Idea #2
-// expect(sqlForPartialUpdate(dataToUpdate, jsToSql)).toThrow(new Error('No data'));
-// Didn't work: still calls the function prior to the toThrow statement
-
-// // Idea# 3
-// function throwError() { sqlForPartialUpdate(dataToUpdate, jsToSql)};
-// expect(throwError).toThrow(new Error('No data'));
-// Does work: it recognizes it's expecting an error before it throws
