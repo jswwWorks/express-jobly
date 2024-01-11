@@ -87,6 +87,10 @@ describe("findAll", function () {
   });
 });
 
+/************************************** findAll */
+//TODO: Tests for querying data base
+//TODO: MAKE SURE TO THROW ERROR FOR EMPTY QUERY
+
 /************************************** get */
 
 describe("get", function () {

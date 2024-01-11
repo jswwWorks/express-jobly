@@ -111,7 +111,7 @@ describe("GET /companies", function () {
 
   });
 
-  test("ok finding all filtered companies when a filter is provided",
+  test("ok finding all filtered companies when a valid filter is provided",
    async function() {
       // Set Company.findAllFiltered to a jext.fn()
       Company.findAllFiltered = jest.fn(); // error here
@@ -122,6 +122,23 @@ describe("GET /companies", function () {
       expect(resp.body).toEqual({companies: ["Filtered Company"]});
 
     });
+
+  test("query string is not valid", async function () {
+    const resp = await request(app).get('/companies?test=fail');
+    expect(resp.status).toEqual(400);
+  });
+
+  test("query string has minEmployees > maxEmployees", async function () {
+    const resp = await request(app).get(
+      '/companies?minEmployees=2+maxEmployees=1'
+    );
+    expect(resp.body).toEqual({
+      "error": {
+        "message": "minEmployees must be less than maxEmployees",
+        "status": 400
+      }
+    });
+  });
 
     // TODO: after mock tests work, write integration test in the future
 });
