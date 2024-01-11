@@ -1,6 +1,6 @@
 "use strict";
 
-const { sqlForPartialUpdate } = require('./sql');
+const { sqlForPartialUpdate, sqlForFilter } = require('./sql');
 
 describe('sqlForPartialUpdate', function () {
 
@@ -33,6 +33,34 @@ describe('sqlForPartialUpdate', function () {
     expect(throwError).toThrow(new Error('No data'));
   });
 });
+
+describe('sqlForFilter', function () {
+
+  test('works: good statements for all possible filters', function() {
+    const dataToFilter = {
+      nameLike: "net",
+      maxEmployees: 45,
+      minEmployees: 2
+    };
+    const jsToSql = {
+      nameLike: "name",
+      minEmployees: "num_employees",
+      maxEmployees: "num_employees",
+    };
+
+    const result = sqlForFilter(dataToFilter, jsToSql);
+
+    expect(result).toEqual({
+      filterCols: `"name" ILIKE $1 AND
+                   "num_employees" <= $2 AND
+                   "num_employees" >= $3`,
+      values: ['%net%', 45, 2]
+    });
+
+  });
+  // TODO: possible (if needed) add test for only some but not all filters
+});
+
 
 
 
