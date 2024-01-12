@@ -169,7 +169,7 @@ describe("GET /users", function () {
           firstName: "U2F",
           lastName: "U2L",
           email: "user2@user.com",
-          isAdmin: false,
+          isAdmin: true,
         },
         {
           username: "u3",
@@ -382,12 +382,29 @@ describe("PATCH /users/:username", () => {
 /************************************** DELETE /users/:username */
 
 describe("DELETE /users/:username", function () {
-  test("works for users", async function () {
+
+  // fix: this is letting any user delete any user -- not what we want
+  test("works: admin deletes self", async function () {
     const resp = await request(app)
         .delete(`/users/u1`)
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({ deleted: "u1" });
   });
+
+  // all works cases:
+  // admin deletes self
+  // admin deletes a different user
+  // non-admin user deletes self
+
+
+
+
+  // fail cases:
+
+  // anon (already have)
+  // if user's not found, 404 for admin
+  // if user is non-admin trying to delete another user, 401
+  // if user's not found and it's a non-admin user trying to delete another user, 401
 
   test("unauth for anon", async function () {
     const resp = await request(app)
@@ -395,6 +412,9 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
+
+
+  // only 404 for admin, otherwise 401 for non-self user
   test("not found if user missing", async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
@@ -402,3 +422,5 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+
+// FIXME: add admin acts on self to other test cases
