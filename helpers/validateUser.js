@@ -5,6 +5,12 @@ const { UnauthorizedError } = require("../expressError");
 // Note: we wanted to make this middleware but we couldn't figure out
 // how to pass in the username from the URL
 
+// middleware should have access to query params so this shouldn't be an issue
+// FIXME: make this helper function middleware
+
+// the req object is the same everywhere so we'll be able to grab it in the
+// middleware
+
 
 /**
  * isAdminOrSelf takes in two inputs: username string "username" and user object

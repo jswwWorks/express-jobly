@@ -23,7 +23,7 @@ describe("ensureIsAdminOrSelf", function () {
   });
 
   test("works: is self (non-admin user acting on themself", function () {
-
+    // missing ) in string
     const username = "george";
     const user = { username: "george", isAdmin: false }
 
@@ -47,4 +47,5 @@ describe("ensureIsAdminOrSelf", function () {
     expect(() => ensureIsAdminOrSelf(username, user))
         .toThrow(UnauthorizedError);
   });
-});
+}); // TODO: add same test from earlier if someone passes in isAdmin is some truthy
+// value that's not exactly the boolean true

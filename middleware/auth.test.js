@@ -79,6 +79,9 @@ describe("ensureIsAdmin", function () {
     const res = { locals: { user: { username: "test", isAdmin: true} } }
     ensureIsAdmin(req, res, next);
     //TODO: Patterned matched ensureLoggedIn, how does this test work?
+    // it's checking that it's not throwing an error
+    // basically, testing that nothing happens (no matcher in jest for this!)
+    // possibly (to learn whether it works) test toHaveBeenCalled w/ mocks?
   });
 
   test("unauth if no login", function () {
@@ -117,5 +120,7 @@ describe("ensureIsAdmin", function () {
         .toThrow(UnauthorizedError);
   });
 
-
+  //TODO: also test that you're logged in and isAdmin is truthy, but isAdmin isn't true
+  // we already have it covered but it's an easy bug to make so it's great to
+  // test for it!
 })

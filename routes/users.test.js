@@ -411,7 +411,13 @@ describe("PATCH /users/:username", () => {
     const isSuccessful = await User.authenticate("u1", "new-password");
     expect(isSuccessful).toBeTruthy();
   });
-});
+}); // TODO: handle non-admin user trying to pass in isAdmin is true (boolean)
+// ensure user cannot make themself into an admin!
+
+// admin should be able to change their own admin status? yes (but good to test)
+// in this codebase, it might not be possible (depends on validation)
+
+// but test who can change it & what happens if they try to
 
 /************************************** DELETE /users/:username */
 

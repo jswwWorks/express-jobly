@@ -52,7 +52,8 @@ describe("POST /companies", function () {
     expect(resp.body).toEqual({
       company: newCompany,
     });
-  });
+  }); // instead of u2Token it might be nice to have adminToken so it's obvious
+  // in tests which user you're using -- this applies everywhere we use u2Token
 
   test("bad request with missing data for admin", async function () {
     const resp = await request(app)
@@ -64,7 +65,7 @@ describe("POST /companies", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
-  //TODO: Is below redundent?
+  //TODO: Is below redundent? -- it's not!
   test("unauth with missing data for non-admin", async function () {
     const resp = await request(app)
         .post("/companies")
@@ -131,8 +132,14 @@ describe("GET /companies", function () {
           ],
     });
   });
+
   // TODO: We have a question about running this below all the other tests,
   // ignores the Company.findAllFiltered and uses mock instead.
+
+  // the scope is strange with mocking here -- you could reset all mocks w
+  // a method in jest or use the clear method
+  // add that method to beforeEach for all the tests
+  // mockResolvedValueOnce could also be used
   test("ok sending query and returning correct companies", async function () {
     const resp = await request(app).get(
       "/companies?minEmployees=1&maxEmployees=2&nameLike=C"
@@ -175,17 +182,17 @@ describe("GET /companies", function () {
   });
 
   test("ok finding all filtered companies when a valid filter is provided",
-   async function() {
-      // Set Company.findAllFiltered to a jext.fn()
-      Company.findAllFiltered = jest.fn(); // error here
+  async function() {
+    // Set Company.findAllFiltered to a jext.fn()
+    Company.findAllFiltered = jest.fn(); // error here
 
-      Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
-      // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
-      // method to test if a function has been called.
-      const resp = await request(app).get('/companies?maxEmployees=1');
-      expect(resp.body).toEqual({companies: ["Filtered Company"]});
+    Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
+    // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
+    // method to test if a function has been called.
+    const resp = await request(app).get('/companies?maxEmployees=1');
+    expect(resp.body).toEqual({companies: ["Filtered Company"]});
 
-    });
+  });
 
   test("query string is not valid", async function () {
     // TODO: Make it more clear about WHY query is invalid
@@ -196,20 +203,21 @@ describe("GET /companies", function () {
   test("query string has minEmployees > maxEmployees", async function () {
     const resp = await request(app).get(
       '/companies?minEmployees=2&maxEmployees=1'
-    );
-    expect(resp.body).toEqual({
-      "error": {
-        "message": "minEmployees must be less than maxEmployees",
-        "status": 400
-      }
+      );
+      expect(resp.body).toEqual({
+        "error": {
+          "message": "minEmployees must be less than maxEmployees",
+          "status": 400
+        }
+      });
     });
+    //TODO: Test for min/max Employees not given as numbers
+
   });
-  //TODO: Test for min/max Employees not given as numbers
-});
 
-/************************************** GET /companies/:handle */
+  /************************************** GET /companies/:handle */
 
-describe("GET /companies/:handle", function () {
+  describe("GET /companies/:handle", function () {
   test("works for anon", async function () {
     const resp = await request(app).get(`/companies/c1`);
     expect(resp.body).toEqual({
@@ -244,6 +252,7 @@ describe("GET /companies/:handle", function () {
 
 /************************************** PATCH /companies/:handle */
 
+// TODO: add a blank line between every test
 describe("PATCH /companies/:handle", function () {
   test("unauthorized for non-admins", async function () {
     const resp = await request(app)
@@ -314,7 +323,8 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(400);
   });
   //TODO: Test above for non admin with 401?
-});
+}); // FIXME: we'll also want to get a test for a non-admin user -- we need that test
+// SUPER IMPORTANT!
 
 /************************************** DELETE /companies/:handle */
 
@@ -349,4 +359,5 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.statusCode).toEqual(404);
   });
   //TODO: Test above for non admin with 401?
-});
+}); // FIXME: want the same error testing as above (if someone tries to go there,
+// we should give a 401)
