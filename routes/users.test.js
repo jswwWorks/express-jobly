@@ -214,7 +214,7 @@ describe("GET /users/:username", function () {
     });
   });
 
-  test("works for admin user", async function () {
+  test("works for admin user getting info on another user", async function () {
     const resp = await request(app)
         .get(`/users/u1`)
         .set("authorization", `Bearer ${u2Token}`);
@@ -225,6 +225,21 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+      },
+    });
+  });
+
+  test("works for admin user getting info on themself", async function () {
+    const resp = await request(app)
+        .get(`/users/u2`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.body).toEqual({
+      user: {
+        username: "u2",
+        firstName: "U2F",
+        lastName: "U2L",
+        email: "user2@user.com",
+        isAdmin: true,
       },
     });
   });
@@ -295,6 +310,24 @@ describe("PATCH /users/:username", () => {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+      },
+    });
+  });
+
+  test("works for admin user editing their own profile", async function () {
+    const resp = await request(app)
+        .patch(`/users/u2`)
+        .send({
+          firstName: "New",
+        })
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.body).toEqual({
+      user: {
+        username: "u2",
+        firstName: "New",
+        lastName: "U2L",
+        email: "user2@user.com",
+        isAdmin: true,
       },
     });
   });
@@ -383,44 +416,57 @@ describe("PATCH /users/:username", () => {
 
 describe("DELETE /users/:username", function () {
 
-  // fix: this is letting any user delete any user -- not what we want
   test("works: admin deletes self", async function () {
+    const resp = await request(app)
+        .delete(`/users/u2`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.body).toEqual({ deleted: "u2" });
+  });
+
+  test("works: admin deletes another user", async function () {
+    const resp = await request(app)
+        .delete(`/users/u1`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.body).toEqual({ deleted: "u1" });
+  });
+
+  test("works: non-admin user deletes themself", async function () {
     const resp = await request(app)
         .delete(`/users/u1`)
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({ deleted: "u1" });
   });
 
-  // all works cases:
-  // admin deletes self
-  // admin deletes a different user
-  // non-admin user deletes self
-
-
-
-
-  // fail cases:
-
-  // anon (already have)
-  // if user's not found, 404 for admin
-  // if user is non-admin trying to delete another user, 401
-  // if user's not found and it's a non-admin user trying to delete another user, 401
-
-  test("unauth for anon", async function () {
+  test("fails: unauth for anon", async function () {
     const resp = await request(app)
         .delete(`/users/u1`);
     expect(resp.statusCode).toEqual(401);
   });
 
+  test("fails: not found if admin attempts to delete missing user",
+  async function () {
+    const resp = await request(app)
+        .delete(`/users/nope`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(404);
+  });
 
-
-  // only 404 for admin, otherwise 401 for non-self user
-  test("not found if user missing", async function () {
+  test("fails: non-admin user tries to delete missing user",
+  async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
         .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(404);
+    expect(resp.statusCode).toEqual(401);
   });
+
+  test("fails: non-admin user tries to another (existing) user",
+  async function () {
+    const resp = await request(app)
+        .delete(`/users/u2`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
 });
 
 // FIXME: add admin acts on self to other test cases
