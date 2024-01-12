@@ -49,7 +49,7 @@ describe("ensureIsAdminOrSelf", function () {
     const username = "penelope";
     const user = undefined; // TODO: is this correct?
 
-    expect(() => ensureIsAdminOrSelf(req, res, next))
+    expect(() => ensureIsAdminOrSelf(username, user))
         .toThrow(UnauthorizedError);
   });
 });

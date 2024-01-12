@@ -17,7 +17,10 @@ const { UnauthorizedError } = require("../expressError");
  *
 */
 function ensureIsAdminOrSelf(username, user) {
-
+  if (username === user?.username || user?.isAdmin === true) {
+    return true;
+  }
+  throw new UnauthorizedError();
 }
 
 module.exports = { ensureIsAdminOrSelf };

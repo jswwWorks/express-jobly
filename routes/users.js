@@ -6,6 +6,7 @@ const jsonschema = require("jsonschema");
 
 const express = require("express");
 const { ensureLoggedIn, ensureIsAdmin } = require("../middleware/auth");
+const { ensureIsAdminOrSelf } = require('../helpers/validateUser');
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -73,6 +74,8 @@ router.get(
  **/
 
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
+  ensureIsAdminOrSelf(req.params.username, res.locals.user);
+
   const user = await User.get(req.params.username);
   return res.json({ user });
 });
@@ -89,6 +92,8 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
  **/
 
 router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
+  ensureIsAdminOrSelf(req.params.username, res.locals.user);
+
   const validator = jsonschema.validate(
     req.body,
     userUpdateSchema,
@@ -98,7 +103,6 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-  //ensureIsAdminOrSelf(req.params.username, res.locals.user);
   const user = await User.update(req.params.username, req.body);
   return res.json({ user });
 });
