@@ -78,6 +78,7 @@ describe("ensureIsAdmin", function () {
     const req = {};
     const res = { locals: { user: { username: "test", isAdmin: true} } }
     ensureIsAdmin(req, res, next);
+    //TODO: Patterned matched ensureLoggedIn, how does this test work?
   });
 
   test("unauth if no login", function () {

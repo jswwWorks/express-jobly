@@ -54,7 +54,7 @@ describe("POST /companies", function () {
     });
   });
 
-  test("bad request with missing data", async function () {
+  test("bad request with missing data for admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send({
@@ -64,8 +64,18 @@ describe("POST /companies", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
-
-  test("bad request with invalid data", async function () {
+  //TODO: Is below redundent?
+  test("unauth with missing data for non-admin", async function () {
+    const resp = await request(app)
+        .post("/companies")
+        .send({
+          handle: "new",
+          numEmployees: 10,
+        })
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+  test("bad request with invalid data for admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send({
@@ -75,6 +85,18 @@ describe("POST /companies", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
+  //TODO: Is below redundent?
+  test("unauth with invalid data for non-admin", async function () {
+    const resp = await request(app)
+        .post("/companies")
+        .send({
+          ...newCompany,
+          logoUrl: "not-a-url",
+        })
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
 });
 
 /************************************** GET /companies */
@@ -109,8 +131,8 @@ describe("GET /companies", function () {
           ],
     });
   });
-     // TODO: We have a question about running this below all the other tests,
-     // ignores the Company.findAllFiltered and uses mock instead.
+  // TODO: We have a question about running this below all the other tests,
+  // ignores the Company.findAllFiltered and uses mock instead.
   test("ok sending query and returning correct companies", async function () {
     const resp = await request(app).get(
       "/companies?minEmployees=1&maxEmployees=2&nameLike=C"
@@ -271,7 +293,7 @@ describe("PATCH /companies/:handle", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(404);
   });
-
+  //TODO: Test above for non admin with 401?
   test("bad request on handle change attempt", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
@@ -281,7 +303,7 @@ describe("PATCH /companies/:handle", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
-
+  //TODO: Test above for non admin with 401?
   test("bad request on invalid data", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
@@ -291,6 +313,7 @@ describe("PATCH /companies/:handle", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
+  //TODO: Test above for non admin with 401?
 });
 
 /************************************** DELETE /companies/:handle */
@@ -306,7 +329,7 @@ describe("DELETE /companies/:handle", function () {
     });
   });
 
-  test("works for users", async function () {
+  test("works for admin users", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u2Token}`);
@@ -319,10 +342,11 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found for no such company", async function () {
+  test("not found for no such company for admin", async function () {
     const resp = await request(app)
         .delete(`/companies/nope`)
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(404);
   });
+  //TODO: Test above for non admin with 401?
 });

@@ -122,7 +122,7 @@ describe("POST /users", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("bad request if missing data", async function () {
+  test("bad request if missing data for admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -131,8 +131,8 @@ describe("POST /users", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
-
-  test("bad request if invalid data", async function () {
+  //TODO: Do we need to write the above for non-admin with 401
+  test("bad request if invalid data for admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -146,6 +146,7 @@ describe("POST /users", function () {
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.statusCode).toEqual(400);
   });
+  //TODO: Do we need to write the above for non-admin with 401
 });
 
 /************************************** GET /users */
@@ -451,7 +452,7 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("fails: non-admin user tries to delete missing user",
+  test("fails: unauth non-admin user tries to delete missing user",
   async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
@@ -459,7 +460,7 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("fails: non-admin user tries to another (existing) user",
+  test("fails: unauth non-admin user tries to delete another (existing) user",
   async function () {
     const resp = await request(app)
         .delete(`/users/u2`)
@@ -469,4 +470,3 @@ describe("DELETE /users/:username", function () {
 
 });
 
-// FIXME: add admin acts on self to other test cases
