@@ -98,7 +98,7 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-  isAdminOrSelf(req.params.username, res.locals);
+  //ensureIsAdminOrSelf(req.params.username, res.locals.user);
   const user = await User.update(req.params.username, req.body);
   return res.json({ user });
 });
