@@ -40,8 +40,22 @@ function ensureLoggedIn(req, res, next) {
   throw new UnauthorizedError();
 }
 
+/**
+ *
+ *  Checks whether user stored in res.locals is logged in and is an admin.
+ *
+ *  Returns boolean.
+ *
+ */
+function ensureIsAdmin(req, res, next) {
+  if (res.locals.user?.username && (res.locals.user?.isAdmin === true)) {
+    return next();
+  }
+  throw new UnauthorizedError();
+}
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
+  ensureIsAdmin
 };
