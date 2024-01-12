@@ -8,12 +8,10 @@ describe("ensureIsAdminOrSelf", function () {
 
     // the username is req.params.username
     // the user is res.locals.user
-
     const username = "john";
     const user = { username: "john", isAdmin: true }
 
     expect(ensureIsAdminOrSelf(username, user)).toEqual(true);
-
   });
 
   test("works: is admin on another user's profile", function () {
@@ -22,7 +20,6 @@ describe("ensureIsAdminOrSelf", function () {
     const user = { username: "john", isAdmin: true }
 
     expect(ensureIsAdminOrSelf(username, user)).toEqual(true);
-
   });
 
   test("works: is self (non-admin user acting on themself", function () {
@@ -31,7 +28,6 @@ describe("ensureIsAdminOrSelf", function () {
     const user = { username: "george", isAdmin: false }
 
     expect(ensureIsAdminOrSelf(username, user)).toEqual(true);
-
   });
 
   test("unauth: non-admin user acting on another user", function() {
@@ -41,7 +37,6 @@ describe("ensureIsAdminOrSelf", function () {
 
     expect(() => ensureIsAdminOrSelf(username, user))
       .toThrow(UnauthorizedError);
-
   });
 
   test("unauth: anon acting on a user", function() {
