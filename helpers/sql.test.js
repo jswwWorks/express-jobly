@@ -36,7 +36,7 @@ describe('sqlForPartialUpdate', function () {
 
 describe('sqlWhereFilter', function () {
 
-  test('works: good statements for all possible filters', function() {
+  test('works: good statements for three filters', function() {
     const dataToFilter = {
       nameLike: "net",
       maxEmployees: 45,
@@ -132,4 +132,8 @@ describe('sqlWhereFilter', function () {
       values: [2]
     });
   });
+
+  //TODO: To make this general, should test for having no filters passed and
+  // handle errors (if any) accordingly.
+  //TODO: Handle other SQL operators such as IN and LIKE
 });

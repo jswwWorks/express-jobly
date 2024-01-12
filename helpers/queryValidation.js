@@ -48,6 +48,9 @@ function _checkQueryAndFormat(query) {
 
   if (queryFilters?.minEmployees) {
     queryFilters.minEmployees = +queryFilters.minEmployees;
+    // TODO: Don't need this error throw, above will always result in a number
+    // or NaN, shouldn't make an error itself. Can have schema validation do
+    // the error more gracefully.
     if (isNaN(queryFilters.minEmployees)) {
       throw new BadRequestError("minEmployees must be a number!");
     }
@@ -55,6 +58,9 @@ function _checkQueryAndFormat(query) {
 
   if (queryFilters?.maxEmployees) {
     queryFilters.maxEmployees = +queryFilters.maxEmployees;
+    // TODO: Don't need this error throw, above will always result in a number
+    // or NaN, shouldn't make an error itself. Can have schema validation do
+    // the error more gracefully.
     if (isNaN(queryFilters.maxEmployees)) {
       throw new BadRequestError("maxEmployees must be a number!");
     }

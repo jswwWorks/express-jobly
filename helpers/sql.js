@@ -48,7 +48,8 @@ const { BadRequestError } = require("../expressError");
  *  Example: { setCols: "first_name=$1, age=$2", values: ['Aliya', 32] }
  */
 // TODO: What if the user doesn't provide good jsToSql data? No validation
-// for this
+// for this -> Not job of this function to test this, should be a level up where
+// query actually occurs.
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   // Ensures there are at least some changes to make in the database
@@ -148,13 +149,12 @@ function sqlWhereFilter(dataToFilter, jsToSqlName, jsToSqlOperator) {
 
     const filterName = keys[i];
 
-    // This line isn't tested now becuase no uses currently, but have this for
-    // future use?
     const column = jsToSqlName[filterName] || filterName;
     const operator = jsToSqlOperator[filterName];
     const idx = i + 1;
 
     if (operator === "ILIKE") {
+      //TODO: Add comment to explain concatenation here
       filters.push(`${column} ${operator} '%' || $${idx} || '%'`);
     } else {
       filters.push(`${column} ${operator} $${idx}`);

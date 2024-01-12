@@ -103,6 +103,8 @@ describe("GET /companies", function () {
     const resp = await request(app).get(
       "/companies?minEmployees=1&maxEmployees=2&nameLike=C"
     );
+    //TODO: Can chain the .query method off the .get() and pass the query as an
+    // object for better readability.
     expect(resp.body).toEqual({
       companies:
           [
@@ -131,7 +133,8 @@ describe("GET /companies", function () {
     Company.findAll = jest.fn();
 
     Company.findAll.mockReturnValue(["No Filter"]);
-
+    // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
+    // method to test if a function has been called.
     const resp = await request(app).get('/companies');
     expect(resp.body).toEqual({companies: ["No Filter"]});
 
@@ -143,13 +146,15 @@ describe("GET /companies", function () {
       Company.findAllFiltered = jest.fn(); // error here
 
       Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
-
+      // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
+      // method to test if a function has been called.
       const resp = await request(app).get('/companies?maxEmployees=1');
       expect(resp.body).toEqual({companies: ["Filtered Company"]});
 
     });
 
   test("query string is not valid", async function () {
+    // TODO: Make it more clear about WHY query is invalid
     const resp = await request(app).get('/companies?test=fail');
     expect(resp.status).toEqual(400);
   });
@@ -165,6 +170,7 @@ describe("GET /companies", function () {
       }
     });
   });
+  //TODO: Test for min/max Employees not given as numbers
 });
 
 /************************************** GET /companies/:handle */

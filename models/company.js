@@ -74,6 +74,9 @@ class Company {
    *  Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    */
   static async findAllFiltered(queryFilters) {
+    //TODO: Deconstruct the querFilters object and pass these into the
+    //sqlWhereFilter so it helps guard what data is passed to this helper
+    //function.
     const { setFilters, values } = sqlWhereFilter(
       queryFilters,
       {
