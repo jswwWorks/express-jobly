@@ -13,7 +13,7 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
-  u2Token,
+  adminToken
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -34,67 +34,68 @@ describe("POST /companies", function () {
 
   test("unauthorized for non-admins", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send(newCompany)
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send(newCompany)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
     expect(resp.body).toEqual({
-      error: {message: "Unauthorized", status: 401},
+      error: { message: "Unauthorized", status: 401 },
     });
   });
 
   test("ok for admin users", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send(newCompany)
-        .set("authorization", `Bearer ${u2Token}`);
+      .post("/companies")
+      .send(newCompany)
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       company: newCompany,
     });
-  }); // instead of u2Token it might be nice to have adminToken so it's obvious
-  // in tests which user you're using -- this applies everywhere we use u2Token
+  });
+
 
   test("bad request with missing data for admin", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          handle: "new",
-          numEmployees: 10,
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .post("/companies")
+      .send({
+        handle: "new",
+        numEmployees: 10,
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
-  //TODO: Is below redundent? -- it's not!
+
   test("unauth with missing data for non-admin", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          handle: "new",
-          numEmployees: 10,
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send({
+        handle: "new",
+        numEmployees: 10,
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
+
   test("bad request with invalid data for admin", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          ...newCompany,
-          logoUrl: "not-a-url",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .post("/companies")
+      .send({
+        ...newCompany,
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
-  //TODO: Is below redundent?
+
   test("unauth with invalid data for non-admin", async function () {
     const resp = await request(app)
-        .post("/companies")
-        .send({
-          ...newCompany,
-          logoUrl: "not-a-url",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .post("/companies")
+      .send({
+        ...newCompany,
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -107,29 +108,29 @@ describe("GET /companies", function () {
     const resp = await request(app).get("/companies");
     expect(resp.body).toEqual({
       companies:
-          [
-            {
-              handle: "c1",
-              name: "C1",
-              description: "Desc1",
-              numEmployees: 1,
-              logoUrl: "http://c1.img",
-            },
-            {
-              handle: "c2",
-              name: "C2",
-              description: "Desc2",
-              numEmployees: 2,
-              logoUrl: "http://c2.img",
-            },
-            {
-              handle: "c3",
-              name: "C3",
-              description: "Desc3",
-              numEmployees: 3,
-              logoUrl: "http://c3.img",
-            },
-          ],
+        [
+          {
+            handle: "c1",
+            name: "C1",
+            description: "Desc1",
+            numEmployees: 1,
+            logoUrl: "http://c1.img",
+          },
+          {
+            handle: "c2",
+            name: "C2",
+            description: "Desc2",
+            numEmployees: 2,
+            logoUrl: "http://c2.img",
+          },
+          {
+            handle: "c3",
+            name: "C3",
+            description: "Desc3",
+            numEmployees: 3,
+            logoUrl: "http://c3.img",
+          },
+        ],
     });
   });
 
@@ -148,51 +149,51 @@ describe("GET /companies", function () {
     // object for better readability.
     expect(resp.body).toEqual({
       companies:
-          [
-            {
-              handle: "c1",
-              name: "C1",
-              description: "Desc1",
-              numEmployees: 1,
-              logoUrl: "http://c1.img",
-            },
-            {
-              handle: "c2",
-              name: "C2",
-              description: "Desc2",
-              numEmployees: 2,
-              logoUrl: "http://c2.img",
-            },
-          ],
+        [
+          {
+            handle: "c1",
+            name: "C1",
+            description: "Desc1",
+            numEmployees: 1,
+            logoUrl: "http://c1.img",
+          },
+          {
+            handle: "c2",
+            name: "C2",
+            description: "Desc2",
+            numEmployees: 2,
+            logoUrl: "http://c2.img",
+          },
+        ],
     });
   });
 
   test("ok finding all companies without any filters provided",
-  async function () {
+    async function () {
 
-    // Set Company.findAll to a jest.fn()
-    Company.findAll = jest.fn();
+      // Set Company.findAll to a jest.fn()
+      Company.findAll = jest.fn();
 
-    Company.findAll.mockReturnValue(["No Filter"]);
-    // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
-    // method to test if a function has been called.
-    const resp = await request(app).get('/companies');
-    expect(resp.body).toEqual({companies: ["No Filter"]});
+      Company.findAll.mockReturnValue(["No Filter"]);
+      // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
+      // method to test if a function has been called.
+      const resp = await request(app).get('/companies');
+      expect(resp.body).toEqual({ companies: ["No Filter"] });
 
-  });
+    });
 
   test("ok finding all filtered companies when a valid filter is provided",
-  async function() {
-    // Set Company.findAllFiltered to a jext.fn()
-    Company.findAllFiltered = jest.fn(); // error here
+    async function () {
+      // Set Company.findAllFiltered to a jext.fn()
+      Company.findAllFiltered = jest.fn(); // error here
 
-    Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
-    // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
-    // method to test if a function has been called.
-    const resp = await request(app).get('/companies?maxEmployees=1');
-    expect(resp.body).toEqual({companies: ["Filtered Company"]});
+      Company.findAllFiltered.mockReturnValue(["Filtered Company"]);
+      // TODO: Could use toHaveBeenCalled (? Check actual syntax) that is a jest
+      // method to test if a function has been called.
+      const resp = await request(app).get('/companies?maxEmployees=1');
+      expect(resp.body).toEqual({ companies: ["Filtered Company"] });
 
-  });
+    });
 
   test("query string is not valid", async function () {
     // TODO: Make it more clear about WHY query is invalid
@@ -203,21 +204,21 @@ describe("GET /companies", function () {
   test("query string has minEmployees > maxEmployees", async function () {
     const resp = await request(app).get(
       '/companies?minEmployees=2&maxEmployees=1'
-      );
-      expect(resp.body).toEqual({
-        "error": {
-          "message": "minEmployees must be less than maxEmployees",
-          "status": 400
-        }
-      });
+    );
+    expect(resp.body).toEqual({
+      "error": {
+        "message": "minEmployees must be less than maxEmployees",
+        "status": 400
+      }
     });
-    //TODO: Test for min/max Employees not given as numbers
-
   });
+  //TODO: Test for min/max Employees not given as numbers
 
-  /************************************** GET /companies/:handle */
+});
 
-  describe("GET /companies/:handle", function () {
+/************************************** GET /companies/:handle */
+
+describe("GET /companies/:handle", function () {
   test("works for anon", async function () {
     const resp = await request(app).get(`/companies/c1`);
     expect(resp.body).toEqual({
@@ -252,27 +253,28 @@ describe("GET /companies", function () {
 
 /************************************** PATCH /companies/:handle */
 
-// TODO: add a blank line between every test
+
 describe("PATCH /companies/:handle", function () {
   test("unauthorized for non-admins", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
-      expect(resp.statusCode).toEqual(401);
-      expect(resp.body).toEqual({
-        error: {message: "Unauthorized", status: 401},
-      });
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.body).toEqual({
+      error: { message: "Unauthorized", status: 401 },
     });
+  });
+
   test("works for admin users", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -286,78 +288,111 @@ describe("PATCH /companies/:handle", function () {
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        });
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      });
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found on no such company", async function () {
+  test("not found on no such company with admin", async function () {
     const resp = await request(app)
-        .patch(`/companies/nope`)
-        .send({
-          name: "new nope",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .patch(`/companies/nope`)
+      .send({
+        name: "new nope",
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
-  //TODO: Test above for non admin with 401?
-  test("bad request on handle change attempt", async function () {
+
+  test("not auth on no such company with non admin", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          handle: "c1-new",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .patch(`/companies/nope`)
+      .send({
+        name: "new nope",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("bad request on handle change attempt with admin", async function () {
+    const resp = await request(app)
+      .patch(`/companies/c1`)
+      .send({
+        handle: "c1-new",
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
-  //TODO: Test above for non admin with 401?
-  test("bad request on invalid data", async function () {
+
+  test("unauth on handle change attempt with non admin", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          logoUrl: "not-a-url",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .patch(`/companies/c1`)
+      .send({
+        handle: "c1-new",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("bad request on invalid data with admin", async function () {
+    const resp = await request(app)
+      .patch(`/companies/c1`)
+      .send({
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
-  //TODO: Test above for non admin with 401?
-}); // FIXME: we'll also want to get a test for a non-admin user -- we need that test
-// SUPER IMPORTANT!
+
+  test("unauth on invalid data with non admin", async function () {
+    const resp = await request(app)
+      .patch(`/companies/c1`)
+      .send({
+        logoUrl: "not-a-url",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+});
 
 /************************************** DELETE /companies/:handle */
 
 describe("DELETE /companies/:handle", function () {
   test("unauthorized for non-admins", async function () {
     const resp = await request(app)
-        .delete(`/companies/c1`)
-        .set("authorization", `Bearer ${u1Token}`);
+      .delete(`/companies/c1`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
     expect(resp.body).toEqual({
-      error: {message: "Unauthorized", status: 401},
+      error: { message: "Unauthorized", status: 401 },
     });
   });
 
   test("works for admin users", async function () {
     const resp = await request(app)
-        .delete(`/companies/c1`)
-        .set("authorization", `Bearer ${u2Token}`);
+      .delete(`/companies/c1`)
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .delete(`/companies/c1`);
+      .delete(`/companies/c1`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("not found for no such company for admin", async function () {
     const resp = await request(app)
-        .delete(`/companies/nope`)
-        .set("authorization", `Bearer ${u2Token}`);
+      .delete(`/companies/nope`)
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
-  //TODO: Test above for non admin with 401?
-}); // FIXME: want the same error testing as above (if someone tries to go there,
-// we should give a 401)
+
+  test("unauth for no such company for non admin", async function () {
+    const resp = await request(app)
+      .delete(`/companies/nope`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+});

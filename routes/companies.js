@@ -28,9 +28,7 @@ const router = new express.Router();
 
 router.post(
   "/",
-  ensureLoggedIn,
   ensureIsAdmin,
-  // we don't necessarily need both bc ensureIsAdmin also checks if logged in
   async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
@@ -109,8 +107,7 @@ router.get("/:handle", async function (req, res, next) {
 
 router.patch(
   "/:handle",
-  ensureLoggedIn,
-  ensureIsAdmin, // same comment from POST
+  ensureIsAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
@@ -133,8 +130,7 @@ router.patch(
 
 router.delete(
   "/:handle",
-  ensureLoggedIn,
-  ensureIsAdmin, // same comment from POST
+  ensureIsAdmin,
   async function (req, res, next) {
     await Company.remove(req.params.handle);
     return res.json({ deleted: req.params.handle });

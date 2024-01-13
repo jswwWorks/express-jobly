@@ -12,8 +12,8 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
-  u2Token,
-  u3Token
+  u3Token,
+  adminToken
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -35,7 +35,7 @@ describe("POST /users", function () {
           email: "new@email.com",
           isAdmin: false,
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
@@ -59,7 +59,7 @@ describe("POST /users", function () {
           email: "new@email.com",
           isAdmin: true,
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
@@ -128,7 +128,7 @@ describe("POST /users", function () {
         .send({
           username: "u-new",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
   //TODO: Do we need to write the above for non-admin with 401
@@ -143,7 +143,7 @@ describe("POST /users", function () {
           email: "not-an-email",
           isAdmin: true,
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
   //TODO: Do we need to write the above for non-admin with 401
@@ -155,9 +155,16 @@ describe("GET /users", function () {
   test("works for admin", async function () {
     const resp = await request(app)
         .get("/users")
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       users: [
+        {
+          username: "admin",
+          firstName: "AD",
+          lastName: "MIN",
+          email: "admin@admin.com",
+          isAdmin: true,
+        },
         {
           username: "u1",
           firstName: "U1F",
@@ -218,7 +225,7 @@ describe("GET /users/:username", function () {
   test("works for admin user getting info on another user", async function () {
     const resp = await request(app)
         .get(`/users/u1`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -232,14 +239,14 @@ describe("GET /users/:username", function () {
 
   test("works for admin user getting info on themself", async function () {
     const resp = await request(app)
-        .get(`/users/u2`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .get(`/users/admin`)
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       user: {
-        username: "u2",
-        firstName: "U2F",
-        lastName: "U2L",
-        email: "user2@user.com",
+        username: "admin",
+        firstName: "AD",
+        lastName: "MIN",
+        email: "admin@admin.com",
         isAdmin: true,
       },
     });
@@ -255,7 +262,7 @@ describe("GET /users/:username", function () {
    async function () {
     const resp = await request(app)
         .get(`/users/nope`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
@@ -303,7 +310,7 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: "New",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -321,7 +328,7 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: "New",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
@@ -348,7 +355,7 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: "Nope",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
@@ -368,7 +375,7 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: 42,
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -425,15 +432,15 @@ describe("DELETE /users/:username", function () {
 
   test("works: admin deletes self", async function () {
     const resp = await request(app)
-        .delete(`/users/u2`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.body).toEqual({ deleted: "u2" });
+        .delete(`/users/admin`)
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.body).toEqual({ deleted: "admin" });
   });
 
   test("works: admin deletes another user", async function () {
     const resp = await request(app)
         .delete(`/users/u1`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({ deleted: "u1" });
   });
 
@@ -454,7 +461,7 @@ describe("DELETE /users/:username", function () {
   async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
