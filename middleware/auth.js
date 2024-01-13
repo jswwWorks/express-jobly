@@ -54,8 +54,30 @@ function ensureIsAdmin(req, res, next) {
   throw new UnauthorizedError();
 }
 
+
+/**
+ * ensureIsAdminOrSelf checks that a user is a logged-in admin.
+ *
+ * If so, proceeds to next function.
+ *
+ * Otherwise, throws an Unauthorized error.
+ *
+*/
+function ensureIsAdminOrSelf(req, res, next) {
+
+  const username = req.params.username;
+  const user = res.locals.user;
+
+  if (username === user?.username || user?.isAdmin === true) {
+    return next();
+  }
+  throw new UnauthorizedError();
+}
+
+
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureIsAdmin
+  ensureIsAdmin,
+  ensureIsAdminOrSelf
 };

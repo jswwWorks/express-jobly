@@ -5,7 +5,8 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
-  ensureIsAdmin
+  ensureIsAdmin,
+  ensureIsAdminOrSelf
 } = require("./auth");
 
 
@@ -124,3 +125,61 @@ describe("ensureIsAdmin", function () {
   // we already have it covered but it's an easy bug to make so it's great to
   // test for it!
 })
+
+
+
+
+describe("ensureIsAdminOrSelf", function () {
+  test("works: is admin on their own profile", function () {
+
+    const req = { params: { username: "john"} };
+    const res = { locals: { user: { username: "john", isAdmin: true} } };
+
+    ensureIsAdminOrSelf(req, res, next);
+  });
+
+  test("works: is admin on another user's profile", function () {
+
+    const req = { params: { username: "teresa"} };
+    const res = { locals: { user: { username: "john", isAdmin: true} } };
+
+    ensureIsAdminOrSelf(req, res, next);
+  });
+
+  test("works: is self (non-admin user acting on themself)", function () {
+
+    const req = { params: { username: "george"} };
+    const res = { locals: { user: { username: "george", isAdmin: false} } };
+
+    ensureIsAdminOrSelf(req, res, next);
+  });
+
+  test("unauth: non-admin user acting on another user", function() {
+
+    const req = { params: { username: "penelope"} };
+    const res = { locals: { user: { username: "george", isAdmin: false} } };
+
+    expect(() => ensureIsAdminOrSelf(req, res, next))
+      .toThrow(UnauthorizedError);
+  });
+
+  test("unauth: anon acting on a user", function() {
+
+    const req = { params: { username: "penelope"} };
+    const res = { locals: {} };
+
+    expect(() => ensureIsAdminOrSelf(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+
+  test("unauth: non-admin has truthy isAdmin value (apart from boolea)",
+    function() {
+      const req = { params: { username: "bob"} };
+      const res = { locals: { user: { username: "not_bob", isAdmin: "yes"}} };
+
+      expect(() => ensureIsAdminOrSelf(req, res, next))
+          .toThrow(UnauthorizedError);
+    });
+
+});
